@@ -15,7 +15,7 @@ if (in_array($msg, $initiators)) {
     $all_added = [];
     foreach($files as $file) {
         if (($file !== '.') and ($file !== '..')) {
-            if (R::findOne('actions', 'file = ?', [$file])) continue;
+            if (R::findOne('commandfiles', 'filename = ?', [$file])) continue;
             $finded++;
             $script = file_get_contents($dir.''.$file);
             $command_name = explode('// Command: ', $script)[1];
