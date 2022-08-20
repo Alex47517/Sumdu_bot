@@ -4,10 +4,10 @@ use R;
 
 class chat {
     public $chat;
-    public $chat_id;
-    function __construct($chat) {
-        $this->chat_id = $chat['id'];
-        $chat = R::findOne('chats', 'tg_id = ?', [$chat['id']]);
+    public $chat_id; //TELEGRAM ID
+    function __construct($chat_id) {
+        $this->chat_id = $chat_id;
+        $chat = R::findOne('chats', 'tg_id = ?', [$chat_id]);
         if ($chat) {
             $this->chat = $chat;
             return true;
@@ -32,7 +32,7 @@ class chat {
         $this->chat = $new_chat;
         return true;
     }
-    function sendMessage($text, $reply_to_message_id = null, $reply_markup = null, $disable_notification = true, $protect_content = false) {
+    public function sendMessage($text, $reply_to_message_id = null, $reply_markup = null, $disable_notification = true, $protect_content = false) {
         $params = [
             'text' => $text,
             'chat_id' => $this->chat_id,
@@ -44,5 +44,27 @@ class chat {
             'parse_mode' => 'html',
         ];
         return Bot::request('sendMessage', $params);
+    }
+    public function getChatMember($user_id) {
+        $params = [
+            'user_id' => $user_id,
+            'chat_id' => $this->chat_id,
+        ];
+        return Bot::request('getChatMember', $params);
+    }
+    public function editMessageText($text, $keyboard, $message_id) {
+        if (!$keyboard) {
+            $r_m = null;
+        } else {
+            $r_m = json_encode(array('inline_keyboard' => $keyboard));
+        }
+        $params = [
+            'message_id' => $message_id,
+            'text' => $text,
+            'parse_mode' => 'html',
+            'chat_id' => $this->chat_id,
+            'reply_markup' => $r_m
+        ];
+        return Bot::request('editMessageText', $params);
     }
 }
