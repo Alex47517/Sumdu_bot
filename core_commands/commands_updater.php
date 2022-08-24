@@ -1,7 +1,7 @@
 <?php
 $initiators = ['!оновити команди', '!обновить команды', '/update_commands'];
 if (in_array($msg, $initiators)) {
-    Permissions::Owner($user->user);
+    Permissions::Admin($user->user);
     $tg_response = $chat->sendMessage('⏳ <b>Оновлюємо список команд...</b>
 
 <em>Пошук нових файлів...</em>');
@@ -26,6 +26,8 @@ if (in_array($msg, $initiators)) {
             $args = explode(' #', $args)[0];
             $syntax = explode('// Syntax: ', $script)[1];
             $syntax = explode(' #', $syntax)[0];
+            $rank = explode('// Rank: ', $script)[1];
+            $rank = explode(' #', $rank)[0];
             $command_text_initiators = explode('// Text: ', $script)[1];
             $command_text_initiators = explode(' #', $command_text_initiators)[0];
             $text_initiators = explode(' ', $command_text_initiators);
@@ -50,13 +52,13 @@ if (in_array($msg, $initiators)) {
                 $add = [];
                 $i = 0;
                 foreach ($text_initiators as $key => $initiator) {
-                    $add[$i] = ['name' => $command_name, 'initiator' => $initiator, 'args' => $args, 'type' => 'text', 'file' => $file]; $i++;
+                    $add[$i] = ['name' => $command_name, 'rank' => $rank, 'initiator' => $initiator, 'args' => $args, 'type' => 'text', 'file' => $file]; $i++;
                 }
                 foreach ($display_initiators as $key => $initiator) {
-                    $add[$i] = ['name' => $command_name, 'initiator' => $initiator, 'type' => 'display', 'file' => $file]; $i++;
+                    $add[$i] = ['name' => $command_name, 'rank' => $rank, 'initiator' => $initiator, 'type' => 'display', 'file' => $file]; $i++;
                 }
                 foreach ($callback_initiators as $key => $initiator) {
-                    $add[$i] = ['name' => $command_name, 'initiator' => $initiator, 'type' => 'callback', 'file' => $file]; $i++;
+                    $add[$i] = ['name' => $command_name, 'rank' => $rank, 'initiator' => $initiator, 'type' => 'callback', 'file' => $file]; $i++;
                 }
                 $db_file = R::dispense('commandfiles');
                 $db_file->name = $command_name;
@@ -80,7 +82,7 @@ if (in_array($msg, $initiators)) {
     }
     foreach ($all_added as $add) {
         if ($add['type'] == 'text') $txt_args = '['.$args.'] '; else $txt_args = null;
-        $added_init .= '🔹 <b>'.$add['name'].':</b> '.$add['type'].' '.$txt_args.'"'.$add['initiator'].'" <em>із '.$add['file'].'</em>
+        $added_init .= '🔹 <b>'.$add['name'].'</b> <em>['.$add['rank'].']</em>: '.$add['type'].' '.$txt_args.'"'.$add['initiator'].'" <em>із '.$add['file'].'</em>
 ';
     }
     if (!$added_init) $added_init = 'Відсутні';

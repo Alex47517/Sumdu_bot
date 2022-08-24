@@ -11,6 +11,24 @@ class User {
             return false;
         }
     }
+    public function loadByNick($tg_id) {
+        $user = R::findOne('users', 'nick = ?', [$tg_id]);
+        if ($user) {
+            $this->user = $user;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function loadByUsername($tg_id) {
+        $user = R::findOne('users', 'username = ?', [$tg_id]);
+        if ($user) {
+            $this->user = $user;
+            return true;
+        } else {
+            return false;
+        }
+    }
     public function newUser($from) {
         $user = R::findOne('users', 'tg_id = ?', [$from['id']]);
         if ($user) {
@@ -37,5 +55,21 @@ class User {
         R::store($this->user);
         return true;
     }
-
+    public function LocalStorageSet($key, $value) {
+        $add = [$key => $value];
+        if ($this->user['tmp']) {
+            $tmp = json_decode($this->user['tmp'], true);
+            $new_tmp = array_merge($tmp, $add);
+        } else $new_tmp = $add;
+        $this->update('tmp', json_encode($new_tmp));
+        return true;
+    }
+    public function LocalStorageGet($key) {
+        $tmp = json_decode($this->user['tmp'], true);
+        return $tmp[$key];
+    }
+    public function LocalStorageClear() {
+        $this->update('tmp');
+        return true;
+    }
 }

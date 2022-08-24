@@ -33,11 +33,12 @@ class chat {
         return true;
     }
     public function sendMessage($text, $reply_to_message_id = null, $reply_markup = null, $disable_notification = true, $protect_content = false) {
+        if ($reply_markup) $reply_markup = json_encode($reply_markup);
         $params = [
             'text' => $text,
             'chat_id' => $this->chat_id,
             'reply_to_message_id' => $reply_to_message_id,
-            'answer_markup' => $reply_markup,
+            'reply_markup' => $reply_markup,
             'disable_notification' => $disable_notification,
             'allow_sending_without_reply' => true,
             'protect_content' => $protect_content,
@@ -52,18 +53,14 @@ class chat {
         ];
         return Bot::request('getChatMember', $params);
     }
-    public function editMessageText($text, $keyboard, $message_id) {
-        if (!$keyboard) {
-            $r_m = null;
-        } else {
-            $r_m = json_encode(array('inline_keyboard' => $keyboard));
-        }
+    public function editMessageText($text, $reply_markup, $message_id) {
+        if ($reply_markup) $reply_markup = json_encode($reply_markup);
         $params = [
             'message_id' => $message_id,
             'text' => $text,
             'parse_mode' => 'html',
             'chat_id' => $this->chat_id,
-            'reply_markup' => $r_m
+            'reply_markup' => $reply_markup
         ];
         return Bot::request('editMessageText', $params);
     }
