@@ -11,6 +11,15 @@ class User {
             return false;
         }
     }
+    public function loadByID($id) {
+        $user = R::load('users', $id);
+        if ($user) {
+            $this->user = $user;
+            return true;
+        } else {
+            return false;
+        }
+    }
     public function loadByNick($tg_id) {
         $user = R::findOne('users', 'nick = ?', [$tg_id]);
         if ($user) {
