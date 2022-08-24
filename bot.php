@@ -1,10 +1,4 @@
 <?php
-//$request_json = file_get_contents('php://input');
-//$request = json_decode($request_json, true);
-//$url = 'https://api.telegram.org/bot1211582899:AAFVWL_VEiR2mn9mllJhelah7QptRaO26_Y/sendMessage?chat_id=458746251&text='.urlencode(var_export($request, true));
-//$response = json_decode(file_get_contents($url, false, $context));
-//die();
-//===
 require_once 'config/start.php';
 require_once 'config/loader.php';
 
@@ -37,6 +31,8 @@ $msg = update::$message['text'];
 if ($msg[0] == '/') $msg = str_replace('@'.$bot_username, '', $msg);
 if ($msg == '0' && !$user->user['display']) die();
 $cmd = explode(' ', $msg);
+$callback_data = update::$callback_data;
+$display = $user->user['display'];
 
 Log::admin('MSG', ''.$chat->chat['id'].' | '.$chat->chat['title'].' | <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a>: '.$msg);
 
@@ -56,7 +52,11 @@ foreach($files as $file) {
     if (($file !== '.') and ($file !== '..'))
         include_once $dir.''.$file;
 }
-$action = R::findOne('actions', '`initiator` = ? AND `type` = ?', [$cmd[0], 'text']);
+$init = ['text' => $cmd[0], 'callback' => explode('_', $callback_data)[0], 'display' => explode('_', $display)[0]];
+foreach ($init as $key => $in) {
+    if ($action) break;
+    if ($in) $action = R::findOne('actions', '`initiator` = ? AND `type` = ?', [$key, $in]);
+}
 if (!$action['file_id']) die();
 $file = R::load('commandfiles', $action['file_id']);
 switch ($file['rank']) {
