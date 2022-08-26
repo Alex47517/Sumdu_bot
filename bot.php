@@ -55,7 +55,7 @@ foreach($files as $file) {
 $init = ['text' => $cmd[0], 'callback' => explode('_', $callback_data)[0], 'display' => explode('_', $display)[0]];
 foreach ($init as $key => $in) {
     if ($action) break;
-    if ($in) $action = R::findOne('actions', '`initiator` = ? AND `type` = ?', [$key, $in]);
+    if ($in) $action = R::findOne('actions', '`initiator` = ? AND `type` = ?', [$in, $key]);
 }
 if (!$action['file_id']) die();
 $file = R::load('commandfiles', $action['file_id']);
