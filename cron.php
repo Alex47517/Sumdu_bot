@@ -4,7 +4,7 @@ require_once 'config/start.php';
 require_once 'config/loader.php';
 require_once 'functions.php';
 
-use api\{Bot as Bot, chat as chat, ChatMember as ChatMember, Log as Log, update as update};
+use api\{Bot as Bot, chat as chat};
 
 echo 'cron started!';
 
