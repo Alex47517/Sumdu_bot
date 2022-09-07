@@ -65,6 +65,7 @@ if (in_array($msg, $initiators)) {
                 $db_file->filename = $file;
                 $db_file->info = $info_text;
                 $db_file->syntax = $syntax;
+                $db_file->rank = $rank;
                 R::store($db_file);
                 foreach ($add as $action) {
                     $command = R::dispense('actions');
