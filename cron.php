@@ -8,7 +8,6 @@ use api\{Bot as Bot, chat as chat, ChatMember as ChatMember, Log as Log, update 
 
 echo 'cron started!';
 
-$bot_token = '1211582899:AAFsXxwJkU4Zi3hhdm-zi5TvPbmmhOHSl0A';
 $bot = new Bot($bot_token);
 $botchecks = R::getAll('SELECT * FROM `botcheck`');
 foreach ($botchecks as $botcheck) {
