@@ -49,12 +49,14 @@ class User {
         } else {
             $nick = $from['id'];
         }
+        Bank::add(4985);
         $user = R::dispense('users');
         $user->tg_id = $from['id'];
         $user->nick = $nick;
         $user->username = $from['username'];
         $user->rank = 'USER';
         $user->balance = 15;
+        $user->reg_date = date('d.m.y');
         R::store($user);
         $this->user = $user;
         return true;
@@ -80,5 +82,13 @@ class User {
     public function LocalStorageClear() {
         $this->update('tmp');
         return true;
+    }
+    public function addBalanceFromBank($add) {
+        if (Bank::add($add*-1)) {
+            $new_user_balance = $this->user['balance']+$add;
+            $this->update('balance', $new_user_balance);
+        } else {
+            custom_error('Банк просить вибачення', 'Але на жаль він збанкрутував');
+        }
     }
 }

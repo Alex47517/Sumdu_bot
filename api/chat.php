@@ -32,7 +32,7 @@ class chat {
         $this->chat = $new_chat;
         return true;
     }
-    public function sendMessage($text, $reply_to_message_id = null, $reply_markup = null, $disable_notification = true, $protect_content = false) {
+    public function sendMessage($text, $reply_to_message_id = null, $reply_markup = null, $disable_notification = true, $protect_content = false, $associative = false) {
         if ($reply_markup) $reply_markup = json_encode($reply_markup);
         $params = [
             'text' => $text,
@@ -44,7 +44,7 @@ class chat {
             'protect_content' => $protect_content,
             'parse_mode' => 'html',
         ];
-        return Bot::request('sendMessage', $params);
+        return Bot::request('sendMessage', $params, $associative);
     }
     public function getChatMember($user_id) {
         $params = [
@@ -63,5 +63,23 @@ class chat {
             'reply_markup' => $reply_markup
         ];
         return Bot::request('editMessageText', $params);
+    }
+    public function restrictChatMember($user_id, $permissions, $until_date) {
+        $params = [
+            'user_id' => $user_id,
+            'chat_id' => $this->chat_id,
+            'permissions' => json_encode($permissions),
+            'until_date' => $until_date,
+        ];
+        return Bot::request('restrictChatMember', $params);
+    }
+    public function banChatMember($user_id, $until_date, $revoke_messages = false) {
+        $params = [
+            'user_id' => $user_id,
+            'chat_id' => $this->chat_id,
+            'revoke_messages' => $revoke_messages,
+            'until_date' => $until_date,
+        ];
+        return Bot::request('banChatMember', $params);
     }
 }

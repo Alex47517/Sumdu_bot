@@ -16,7 +16,8 @@ $chat = new chat(update::$chat['id']);
 if (!$chat->chat['id']) {
     $chat->storeChat(update::$chat);
 }
-
+//$chat->sendMessage('[DEBUG]
+//'.var_export($request, true)); die();
 $user = new User();
 if (!$user->loadByTGID(update::$from['id'])) {
     $user->newUser(update::$from);
@@ -41,9 +42,10 @@ if ($chat->chat_id == $admin_user_id) {
     $result = $chat->sendMessage(var_export($request, true));
 }
 
-if ($msg == '/start' or $msg == '/start@'.$bot_username) {
+if (($msg == '/start' or $msg == '/start@'.$bot_username) && $user->user['tg_id'] != $chat->chat['tg_id']) {
     menu();
 }
+
 //файли із core_commands будуть підключені усі без виключення
 //це системні команди, котрі повинні постійно виконуватися
 $dir = __DIR__.'/core_commands/';
@@ -52,10 +54,13 @@ foreach($files as $file) {
     if (($file !== '.') and ($file !== '..'))
         include_once $dir.''.$file;
 }
+
 $init = ['text' => $cmd[0], 'callback' => explode('_', $callback_data)[0], 'display' => explode('_', $display)[0]];
 foreach ($init as $key => $in) {
     if ($action) break;
     if ($in) $action = R::findOne('actions', '`initiator` = ? AND `type` = ?', [$in, $key]);
+    if ($key == 'display' && $in && $action) $ex_display = explode('_', $display);
+    if ($key == 'callback' && $in && $action) $ex_callback = explode('_', $callback_data);
 }
 if (!$action['file_id']) die();
 $file = R::load('commandfiles', $action['file_id']);

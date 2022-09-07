@@ -108,7 +108,7 @@ if ($user->user['display'] == 'creating_command_part9' && $msg) {
     if ($msg == '/next' or $msg == '/next@'.$bot_username) $msg = 'USER';
     $user->LocalStorageSet('rank', $msg);
     $user->update('display');
-    if (!Permissions::Owner($user->user)) {
+    if (!Permissions::Owner($user->user, true)) {
         $command = R::dispense('checkingcommands');
         $command->info = $user->user['tmp'];
         $command->user_id = $user->user['id'];

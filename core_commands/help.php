@@ -30,4 +30,5 @@ if (in_array($cmd[0], $initiators)) {
     } else {
         $chat->sendMessage('ℹ Загальна довідка ще у розробці');
     }
+    die();
 }

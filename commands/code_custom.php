@@ -7,5 +7,5 @@
 // Args: 1 #
 // Rank: OWNER #
 //
-eval(str_replace($cmd[0], "", $msg));
+eval(str_replace($cmd[0], '', $msg));
 $chat->sendMessage("Код виконаний!");
