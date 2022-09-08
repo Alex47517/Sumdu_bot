@@ -91,4 +91,9 @@ class User {
             custom_error('Банк просить вибачення', 'Але на жаль він збанкрутував');
         }
     }
+    public function addToBlackList($time) {
+        if ($time == 0) $store = 1; else $store = date('U')+round($time);
+        $this->update('blacklist', ($store));
+        return true;
+    }
 }

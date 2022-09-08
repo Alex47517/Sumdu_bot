@@ -82,4 +82,12 @@ class chat {
         ];
         return Bot::request('banChatMember', $params);
     }
+    public function unbanChatMember($user_id, $only_if_banned = true) {
+        $params = [
+            'user_id' => $user_id,
+            'chat_id' => $this->chat_id,
+            'only_if_banned' => $only_if_banned,
+        ];
+        return Bot::request('unbanChatMember', $params);
+    }
 }

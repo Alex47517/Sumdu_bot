@@ -46,6 +46,22 @@ if (($msg == '/start' or $msg == '/start@'.$bot_username) && $user->user['tg_id'
     menu();
 }
 
+//перевірка на ЧС
+if ($user->user['blacklist']) {
+    if (($user->user['blacklist'] - date('U')) > 0 or $user->user['blacklist'] == 1) {
+        die();
+    } else {
+        $user->update('blacklist');
+    }
+}
+if ($chatMember->chatMember['blacklist']) {
+    if (($chatMember->chatMember['blacklist'] - date('U')) > 0 or $chatMember->chatMember['blacklist'] == 1) {
+        die();
+    } else {
+        $chatMember->update('blacklist');
+    }
+}
+
 //файли із core_commands будуть підключені усі без виключення
 //це системні команди, котрі повинні постійно виконуватися
 $dir = __DIR__.'/core_commands/';

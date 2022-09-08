@@ -41,8 +41,8 @@ class ChatMember {
     }
 
     public function update($param, $value = null) {
-        $this->user[$param] = $value;
-        R::store($this->user);
+        $this->chatMember[$param] = $value;
+        R::store($this->chatMember);
         return true;
     }
 
@@ -52,5 +52,11 @@ class ChatMember {
         $chat_user = $chat->getChatMember($user['tg_id']);
         if ($chat_user->result->status == 'administrator' or $chat_user->result->status == 'creator') $is_admin = true; else $is_admin = false;
         return $is_admin;
+    }
+
+    public function addToBlackList($time) {
+        if ($time == 0) $store = 1; else $store = date('U')+round($time);
+        $this->update('blacklist', ($store));
+        return true;
     }
 }

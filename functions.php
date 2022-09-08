@@ -1,7 +1,11 @@
 <?php
+
+use api\chat;
+
 class Time {
     //переобразовывает текст вида "2d4m5s" в секунды
     public static function toTimestamp($str){
+        if ($str == 0) return 0;
         $month = self::getDatePart($str, 'M');
         $week = self::getDatePart($str, 'w');
         $day = self::getDatePart($str, 'd');
@@ -48,6 +52,7 @@ class Time {
     }
     //переобразовывает секунды в текстовое представление времени, пример: 2 дня, 6 часов, 7 мин. 9 сек.
     public static function sec2time_txt($w_time) {
+        if ($w_time == 'e') return 'вічність';
         $t = self::seconds2times($w_time);
         $time = '';
         if ($t[3] && $t[3] != 0) {
@@ -263,7 +268,36 @@ function ban($user_id, $time, $reason, $by) {
 <b>Адміністратор: </b>'.$by.'
 <b>Причина: </b>'.$reason.'
 <b>Срок: </b>'.$str_time.'');
-        return $chat->banChatMember($s_user['tg_id'], $until_date);
+        $result = $chat->banChatMember($s_user['tg_id'], $until_date);
+        $pm = new Chat($s_user['tg_id']);
+        $keyboard[0][0]['text'] = 'Повернутися у чат';
+        $keyboard[0][0]['url'] = 'https://t.me/+_pjx_wfyvjdlMzli';
+        $pm->sendMessage('📛 <b>Ви були заблоковані у чаті "'.$chat->chat['name'].'"</b>
+
+<b>Причина: </b>'.$reason.'
+<b>Срок: </b>'.$str_time.'
+
+<em>Після закінчення терміну блокування Ви можете повернутися натиснувши кнопку нижче</em>', null, ['inline_keyboard' => $keyboard]);
+        return $result;
+    } else {
+        return false;
+    }
+}
+function unban($user_id, $by) {
+    global $chat;
+    $s_user = R::load('users', $user_id);
+    if ($s_user) {
+        $chat->sendMessage('✅ <b>Користувач <a href="tg://user?id='.$s_user['tg_id'].'">'.$s_user['nick'].'</a> розбанений</b>
+
+<b>Адміністратор: </b>'.$by.'');
+        $result = $chat->unbanChatMember($s_user['tg_id']);
+        $pm = new Chat($s_user['tg_id']);
+        $keyboard[0][0]['text'] = 'Повернутися у чат';
+        $keyboard[0][0]['url'] = 'https://t.me/+_pjx_wfyvjdlMzli';
+        $pm->sendMessage('✅ <b>Адміністратор чату "'.$chat->chat['name'].'" розблокував Вас</b>
+
+Ви можете повернутися натиснувши кнопку нижче', null, ['inline_keyboard' => $keyboard]);
+        return $result;
     } else {
         return false;
     }
@@ -282,4 +316,14 @@ function gen_password($length = 6) {
         $password .= $arr[random_int(0, count($arr) - 1)];
     }
     return $password;
+}
+function replace_custom_info($custom_info, $user) {
+    $custom_info = str_replace('%id', $user['id'], $custom_info);
+    $custom_info = str_replace('%nick', $user['nick'], $custom_info);
+    $custom_info = str_replace('%rank', $user['rank'], $custom_info);
+    $custom_info = str_replace('%balance', $user['balance'], $custom_info);
+    $custom_info = str_replace('%group', $user['grp'], $custom_info);
+    $custom_info = str_replace('%tg', '<a href="tg://user?id='.$user['tg_id'].'">'.$user['tg_id'].'</a>', $custom_info);
+    $custom_info = str_replace('%date', $user['reg_date'], $custom_info);
+    return $custom_info;
 }
