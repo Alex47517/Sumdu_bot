@@ -19,8 +19,16 @@ if (!$chat->chat['id']) {
 //$chat->sendMessage('[DEBUG]
 //'.var_export($request, true)); die();
 $user = new User();
-if (!$user->loadByTGID(update::$from['id'])) {
-    $user->newUser(update::$from);
+if (update::$new_chat_member) {
+    $from = update::$new_chat_member;
+} else $from = update::$from;
+if (!$user->loadByTGID($from['id'])) {
+    $user->newUser($from);
+    $curator = R::findOne('curators', 'chat_id = ?', [$chat->chat['id']]);
+    if ($curator) {
+        $user->update('botcheck', 1);
+        $user->update('grp', $curator['grp']);
+    }
 }
 
 $chatMember = new ChatMember($user->user['id'], $chat->chat['id']);
@@ -83,6 +91,7 @@ $file = R::load('commandfiles', $action['file_id']);
 switch ($file['rank']) {
     case 'OWNER': Permissions::Owner($user->user); break;
     case 'ADMIN': Permissions::Admin($user->user); break;
+    case 'STAR': Permissions::Star($user->user); break;
     case 'MODER': Permissions::Moder($user->user); break;
     case 'ChatAdmin': Permissions::ChatAdmin($user->user); break;
 }

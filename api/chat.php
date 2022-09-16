@@ -46,6 +46,11 @@ class chat {
         ];
         return Bot::request('sendMessage', $params, $associative);
     }
+    public function update($param, $value = null) {
+        $this->chat[$param] = $value;
+        R::store($this->chat);
+        return true;
+    }
     public function getChatMember($user_id) {
         $params = [
             'user_id' => $user_id,
@@ -89,5 +94,18 @@ class chat {
             'only_if_banned' => $only_if_banned,
         ];
         return Bot::request('unbanChatMember', $params);
+    }
+    public function createChatInviteLink($name, $expire_date = null, $member_limit = null, $creates_join_request = null) {
+        $params = [
+            'name' => $name,
+            'chat_id' => $this->chat_id,
+            'expire_date' => $expire_date,
+            'member_limit' => $member_limit,
+            'creates_join_request' => $creates_join_request,
+        ];
+        return Bot::request('createChatInviteLink', $params);
+    }
+    public function sendPhoto() {
+
     }
 }

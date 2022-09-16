@@ -3,10 +3,10 @@ if ($chat->chat['tg_id'] == $user->user['tg_id']) {
     if ($msg == '/start') {
         $text = '👋 <b>Вас вітає СумДУ бот!</b>';
         $i = 0;
-        if (!$user->user['grp']) {
-            $keyboard[$i][0] = '🎓 Я тільки вступив';
-            $i++;
-        }
+//        if (!$user->user['grp']) {
+//            $keyboard[$i][0] = '🎓 Я тільки вступив';
+//            $i++;
+//        }
         $keyboard[$i][0] = '🔐 Авторизація на порталі';
         $i++;
         $chat->sendMessage($text, null, ['keyboard' => $keyboard]);

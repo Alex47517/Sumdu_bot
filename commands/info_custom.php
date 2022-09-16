@@ -21,6 +21,7 @@ if (update::$reply_user_id) {
     }
 }
 $s_user = R::findOne('users', $col.' = ?', [$find]);
+if (!$cmd[1] && $col != 'tg_id') $s_user = $user->user;
 if (!$s_user) custom_error('Помилка 404', 'Користувач не знайдений');
 $s_chatMember = new ChatMember($s_user['id'], $chat->chat['id']);
 if (($s_chatMember->chatMember['blacklist'] - date('U')) > 0 or $s_chatMember->chatMember['blacklist'] == 1) {

@@ -327,3 +327,10 @@ function replace_custom_info($custom_info, $user) {
     $custom_info = str_replace('%date', $user['reg_date'], $custom_info);
     return $custom_info;
 }
+function getEmojiNum($num) {
+    if ($num >= 0 && $num < 10) {
+        return ''.$num.'⃣';
+    } else {
+        return $num.'.';
+    }
+}

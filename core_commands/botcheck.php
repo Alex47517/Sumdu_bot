@@ -1,7 +1,7 @@
 <?php
 use api\update as update;
 //update::$new_chat_user_id or
-if (!$user->user['botcheck'] && $user->user['tg_id'] != $chat->chat['tg_id']) {
+if (!$user->user['botcheck'] && $user->user['tg_id'] != $chat->chat['tg_id'] && $chat->chat['botcheck']) {
         $result = mute($user->user['id'], 0, 'Анти-Бот перевірка', '[Anti-BOT]');
         $botcheck = R::dispense('botcheck');
         $botcheck->user_id = $user->user['id'];

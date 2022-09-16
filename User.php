@@ -83,7 +83,7 @@ class User {
         $this->update('tmp');
         return true;
     }
-    public function addBalanceFromBank($add) {
+    public function addBal($add) {
         if (Bank::add($add*-1)) {
             $new_user_balance = $this->user['balance']+$add;
             $this->update('balance', $new_user_balance);

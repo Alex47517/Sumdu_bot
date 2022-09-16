@@ -8,6 +8,21 @@
 // Rank: USER #
 //
 use api\update as update;
+if (in_array($cmd[1], ['встановити', 'установить', 'set'])) {
+    if ($cmd[2]) {
+        $s_user = R::findOne('users', 'username = ?', [$cmd[2]]);
+        if (!$s_user) {
+            $s_user = R::findOne('users', 'nick = ?', [$cmd[2]]);
+            if (!$s_user) {
+                $user->update('nick', $cmd[2]);
+                $chat->sendMessage('✅ Ви змінили нік на <b>'.$cmd[2].'</b>');
+                die();
+            }
+        }
+        custom_error('Помилка', 'Цей нік вже використовується');
+    } else custom_error('Синтаксис:', '!нік встановити [новий нік]');
+    die();
+}
 $s_user = new User();
 if (update::$reply_user_id) {
 $s_user->loadByTGID(update::$reply_user_id);
