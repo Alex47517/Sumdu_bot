@@ -8,7 +8,7 @@
 // Rank: USER #
 //
 use api\update as update;
-$mt = mt_rand(1, 100);
+$mt = random_int(1, 100);
 $bet = round($cmd[1]);
 $on = $cmd[2];
 if ($bet < 5) custom_error("Помилка", "Мінімальна ставка: 5💰");
@@ -20,7 +20,7 @@ global $bet;
 global $chat;
 global $mt;
 $user->addBal($bet*$factor);
-$chat->sendMessage("🎉 Вітаємо, ти виграв <b>".($bet*2)."</b>💰
+$chat->sendMessage("🎉 Вітаємо, ти виграв <b>".($bet*2)."💰</b>
 
 Випало число: ".$mt."
 Ваш баланс: <b>".$user->user['balance']."💰</b>", update::$message_id); die();
@@ -31,7 +31,7 @@ global $bet;
 global $chat;
 global $mt;
 $user->addBal($bet*-1);
-$chat->sendMessage("👹 Вітаємо, ти програв <b>".($bet)."</b>💰
+$chat->sendMessage("👹 Вітаємо, ти програв <b>".($bet)."💰</b>
 
 Випало число: ".$mt."
 Ваш баланс: <b>".$user->user['balance']."💰</b>", update::$message_id); die();

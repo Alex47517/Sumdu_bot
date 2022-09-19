@@ -1663,8 +1663,12 @@ class OODBBean implements \IteratorAggregate,\ArrayAccess,\Countable,Jsonable
 	 * @var boolean
 	 */
 	protected static $enforceUTF8encoding = FALSE;
+    /**
+     * @var array|bool|mixed|string|null
+     */
+    public mixed $balance;
 
-	/**
+    /**
 	 * This is where the real properties of the bean live. They are stored and retrieved
 	 * by the magic getter and setter (__get and __set).
 	 *

@@ -28,7 +28,15 @@ if (in_array($cmd[0], $initiators)) {
 <b>Ініціатори (ініціатор [тип], кількість аргументів):</b>
 '.$send_initiators);
     } else {
-        $chat->sendMessage('ℹ Загальна довідка ще у розробці');
+        $commands = R::getAll('SELECT * FROM commandfiles');
+        $text = '📄 <b>Список модулів:</b>
+Щоб прочитати довідку - пишіть: !довідка [назва команди]
+';
+        foreach ($commands as $command) {
+            $text .= '<code>'.$command['name'].'</code>
+';
+        }
+        $chat->sendMessage($text);
     }
     die();
 }

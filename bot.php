@@ -16,8 +16,11 @@ $chat = new chat(update::$chat['id']);
 if (!$chat->chat['id']) {
     $chat->storeChat(update::$chat);
 }
-//$chat->sendMessage('[DEBUG]
-//'.var_export($request, true)); die();
+$debug_all = R::load('settings', 3);
+if ($debug_all['value']) {
+    $chat->sendMessage('⚙ [DEBUG/ALL]
+'.var_export($request, true));
+}
 $user = new User();
 if (update::$new_chat_member) {
     $from = update::$new_chat_member;
