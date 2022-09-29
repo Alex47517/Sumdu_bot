@@ -15,6 +15,10 @@ if ($ex_callback[0] == 'apples') {
         $player_id = $ex_callback[3];
         $game = $ex_callback[4];
         $sum = $ex_callback[5];
+        if ($player_id != $user->user['id']) {
+            $chat->answerCallbackQuery('💢 Це не твоя гра. Напиши "!яблучка [ставка]", щоб запустити свою', true);
+            die();
+        }
         for ($i = 0; $i <= $game; $i++) {
             $storage = $user->LocalStorageGet($i);
             for ($k = 0; $k < 4; $k++) {
@@ -49,11 +53,11 @@ if ($ex_callback[0] == 'apples') {
         }
         if ($game == $row) {
             if ($game < 5) {
-                if (mt_rand(0,2) > 0) $win = true; else $win = false;
+                if (mt_rand(0,3) > 0) $win = true; else $win = false;
             } elseif ($game < 11) {
-                if (mt_rand(0,2) == 0) $win = true; else $win = false;
+                if (mt_rand(0,2) > 0) $win = true; else $win = false;
             } else {
-                if (mt_rand(0,3) == 0) $win = true; else $win = false;
+                if (mt_rand(0,1) > 0) $win = true; else $win = false;
             }
             $bomb = $col;
             while ($bomb == $col) {
@@ -111,7 +115,7 @@ if ($ex_callback[0] == 'apples') {
     $sum = round($cmd[1]);
     if ($user->user['balance'] < $sum) custom_error('Недостатньо коштів', 'Необхідно: <b>' . $sum . '💰</b>
 У тебе: <b>' . $user->user['balance'] . '💰</b>');
-    if ($sum < 50) custom_error('Увага', 'Мінімальна ставка: <b>' . $user->user['balance'] . '💰</b>');
+    if ($sum < 50) custom_error('Увага', 'Мінімальна ставка: <b>50💰</b>');
     $user->addBal(($cmd[1] * -1));
     $game_id = mt_rand(1000, 9999);
     for ($i = 0; $i < 4; $i++) {

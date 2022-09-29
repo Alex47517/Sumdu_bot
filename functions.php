@@ -199,7 +199,7 @@ function new_command($command) {
     fclose($new_command_file);
     return true;
 }
-function mute($user_id, $time, $reason, $by) {
+function mute($user_id, $time, $reason, $by, $send_msg = true) {
     if (!$reason) $reason = '[Не вказана]';
     if ($time == 0) {
         $until_date = date('U')+1;
@@ -211,11 +211,13 @@ function mute($user_id, $time, $reason, $by) {
     global $chat;
     $s_user = R::load('users', $user_id);
     if ($s_user) {
-        $chat->sendMessage('👺 <b>Користувачу <a href="tg://user?id='.$s_user['tg_id'].'">'.$s_user['nick'].'</a> видано мут</b>
+        if ($send_msg) {
+            $chat->sendMessage('👺 <b>Користувачу <a href="tg://user?id=' . $s_user['tg_id'] . '">' . $s_user['nick'] . '</a> видано мут</b>
 
-<b>Адміністратор: </b>'.$by.'
-<b>Причина: </b>'.$reason.'
-<b>Срок: </b>'.$str_time.'');
+<b>Адміністратор: </b>' . $by . '
+<b>Причина: </b>' . $reason . '
+<b>Срок: </b>' . $str_time . '');
+        }
         $permissions = [
             'can_send_messages' => false,
             'can_send_media_messages' => false,
@@ -231,13 +233,15 @@ function mute($user_id, $time, $reason, $by) {
         return false;
     }
 }
-function unmute($user_id, $by) {
+function unmute($user_id, $by, $send_msg = true) {
     global $chat;
     $s_user = R::load('users', $user_id);
     if ($s_user) {
-        $chat->sendMessage('✅ <b>Користувача <a href="tg://user?id='.$s_user['tg_id'].'">'.$s_user['nick'].'</a> розмучено</b>
+        if ($send_msg) {
+            $chat->sendMessage('✅ <b>Користувача <a href="tg://user?id=' . $s_user['tg_id'] . '">' . $s_user['nick'] . '</a> розмучено</b>
 
-<b>Адміністратор: </b>'.$by.'');
+<b>Адміністратор: </b>' . $by . '');
+        }
         $permissions = [
             'can_send_messages'         => true,
             'can_send_media_messages'   => true,
