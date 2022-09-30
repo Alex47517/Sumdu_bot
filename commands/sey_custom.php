@@ -12,6 +12,6 @@ $c = R::load("chats", $cmd[1]);
 if ($c) {
 $text = str_replace($cmd[0]." ".$cmd[1]." ", "", $msg);
 $to_chat = new chat($c["tg_id"]);
-$to_chat->sendMessage($text);
-$chat->sendMessage("✅ Надіслано");
+$result = $to_chat->sendMessage($text);
+$chat->sendMessage(var_export($result, true));
 } else custom_error("Помилка 404", "чат не знайдений");
