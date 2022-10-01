@@ -53,17 +53,7 @@ function writeMap($move) {
     }
     return $out;
 }
-//Визначаємо скільки "ходів" зробе літак
-switch (mt_rand(0, 5)) {
-    case 0: $all_moves = random_int(0, 2); break;
-    case 1: $all_moves = random_int(3, 5); break;
-    case 2: $all_moves = random_int(6, 8); break;
-    case 3: $all_moves = random_int(9, 11); break;
-    case 4: $all_moves = random_int(12, 20); break;
-    case 5: $all_moves = random_int(20, 50); break;
-    default:
-        die('ERR');
-}
+$all_moves = $user->LocalStorageGet('game_all_moves');
 echo 'all_moves: '.$all_moves.PHP_EOL;
 sleep($sec);
 while (json_decode(R::load('users', $user->user['id'])['tmp'], true)['game'] == 'aviator' && $moves <= $all_moves) {

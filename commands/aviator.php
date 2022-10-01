@@ -22,6 +22,11 @@ if ($ex_callback[0] == 'aviator') {
             $process->setPid($pid);
             $stopped = $process->stop(); // возвращает true или false
             $chat->update('aviator_started', 0);
+            $all_moves = $user->LocalStorageGet('game_all_moves');
+            if (mt_rand(0, 10) == 0) $all_moves = mt_rand(40, 50);
+            $profit = $user->LocalStorageGet('bet');
+            $cof = 1.1;
+            for($i = 0; $i < $all_moves; $i++) $profit *= $cof;
             $chat->editMessageText('<b>🚀 Авіатор [завершено]</b>
 
 <b>🎉 Виграш отримано🎉</b>
@@ -29,7 +34,10 @@ if ($ex_callback[0] == 'aviator') {
 Ставка: <b>'.$user->LocalStorageGet('bet').'💰</b>
 Виграш: <b>'.round($ex_callback[3]).'💰</b>
 
-✈ Ходів: <b>'.$ex_callback[4].'</b>
+Можливий виграш: <b>'.round($profit).'💰</b>
+
+🛩 Зупинений на <b>'.$ex_callback[4].'</b> ході
+✈ Усього ходів: <b>'.$all_moves.'</b>
 ', null, update::$btn_id);
             $user->LocalStorageClear();
             die();
@@ -55,6 +63,18 @@ if ($msg) {
     $user->LocalStorageSet('bet', $bet);
     $user->LocalStorageSet('msg_tg_id', $id);
     $user->LocalStorageSet('chat_tg_id', $chat->chat_id);
+    //Визначаємо скільки "ходів" зробе літак
+    switch (mt_rand(0, 5)) {
+        case 0: $all_moves = random_int(0, 1); break;
+        case 1: $all_moves = random_int(2, 3); break;
+        case 2: $all_moves = random_int(4, 5); break;
+        case 3: $all_moves = random_int(6, 10); break;
+        case 4: $all_moves = random_int(11, 15); break;
+        case 5: $all_moves = random_int(21, 50); break;
+        default:
+            die('ERR');
+    }
+    $user->LocalStorageSet('game_all_moves', $all_moves);
     $process = new Process('php -f ' . __DIR__ . '/../daemons/aviator.php ' . $user->user['id'] . '');
     $processId = $process->getPid();
     $user->LocalStorageSet('game_pid', $processId);

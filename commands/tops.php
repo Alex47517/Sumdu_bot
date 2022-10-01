@@ -11,7 +11,7 @@ if ($cmd[1] == 'баланс' or $cmd[1] == 'balance') {
     $default_limit = 5;
     if ($cmd[2]) $limit = round($cmd[2]); else $limit = $default_limit;
     if (!$limit) $limit = $default_limit;
-    $top_users = array_values(R::find('users', 'ORDER BY `balance` DESC LIMIT '.$limit));
+    $top_users = array_values(R::find('users', 'ORDER BY `balance` DESC LIMIT ?', [$limit]));
     $text = '💰 <b>Топ по балансу:</b>
 ';
     foreach ($top_users as $key => $top_user) {

@@ -8,8 +8,8 @@
 // Rank: USER #
 //
 if ($user->user['tmp'] != 'promo2') {
-    if ($cmd[1] == 'X6ks5i7f8wf') {
-        $user->update('tmp', 'promo');
+    if ($cmd[1] == 'jw73Jsyy9Ks') {
+        $user->update('tmp', 'promo2');
         $user->addBal(5000);
         $chat->sendMessage('✅ Промо-код активований');
     } else {
