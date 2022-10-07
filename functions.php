@@ -1,6 +1,6 @@
 <?php
 
-use api\chat;
+use api\{chat, update};
 
 class Time {
     //переобразовывает текст вида "2d4m5s" в секунды
@@ -94,7 +94,7 @@ function menu() {
     global $user;
     global $chat;
     $user->update('display');
-    $chat->sendMessage('🔅 <b>Ви завершили усі активні сессії</b>'); die();
+    $chat->sendMessage('🔅 <b>Ви завершили усі активні сессії</b>', update::$message_id, ['remove_keyboard' => true, 'selective' => true]); die();
 }
 function args_error($action) {
     global $chat;

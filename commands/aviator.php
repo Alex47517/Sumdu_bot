@@ -10,6 +10,7 @@
 //
 require __DIR__.'/../lib/Process.php';
 use api\update as update;
+use api\Log as Log;
 if ($ex_callback[0] == 'aviator') {
     if ($ex_callback[1] == 'get') {
         if ($ex_callback[2] == $user->user['id']) {
@@ -74,6 +75,7 @@ if ($msg) {
         default:
             die('ERR');
     }
+    Log::admin('AVIATOR', 'Rand: '.$all_moves);
     $user->LocalStorageSet('game_all_moves', $all_moves);
     $process = new Process('php -f ' . __DIR__ . '/../daemons/aviator.php ' . $user->user['id'] . '');
     $processId = $process->getPid();

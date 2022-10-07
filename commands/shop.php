@@ -10,6 +10,8 @@
 // Rank: USER #
 //
 use api\update as update;
+$info_price = 4; //ціна інфо
+$photo_price = 3; //ціна фото в інфо
 if ($ex_display[0]) {
     if ($ex_display[1] == 'customInfo') {
         $msg = strip_tags($msg);
@@ -47,16 +49,16 @@ if ($ex_display[0]) {
 '.replace_custom_info($store_text, $user->user), update::$message_id, ['inline_keyboard' => $keyboard]);
     } elseif ($ex_display[1] == 'photo') {
         if (update::$photo_id) {
-            if ($user->user['balance'] < 7000) custom_error('Недостатньо коштів', 'Потрібно: <b>10000</b>💰
-У тебе: <b>'.$user->user['balance'].'</b>💰');
+            if ($user->user['diamonds'] < $photo_price) custom_error('Недостатньо коштів', 'Потрібно: <b>'.$photo_price.'</b>💎
+У тебе: <b>'.$user->user['diamonds'].'</b>💎');
             $custominfo = R::load('custominfo', $user->user['custom_info']);
             if ($custominfo['text']) {
                 $custominfo->photo = update::$photo_id;
                 R::store($custominfo);
-                $user->addBal(-7000);
+                if ($photo_price != 0) $user->update('diamonds', ($user->user['diamonds']-$photo_price));
                 $user->update('display');
                 $chat->sendMessage('✅ Фото встановлено!', update::$message_id);
-            } else custom_error('Помилка', 'Ви повинні спочатку купити "Своє оформлення інфо" щоб встановити фото', true);
+            } else { $user->update('display'); custom_error('Помилка', 'Ви повинні спочатку купити "Своє оформлення інфо" щоб встановити фото', true); }
         } else custom_error('Помилка', 'Надішліть фото або напишіть /start для виходу');
     }
 }
@@ -66,24 +68,24 @@ if ($ex_callback[0]) {
             $chat->answerCallbackQuery('✅ Скасовано', true);
             $chat->deleteMessage(update::$btn_id);
         } elseif ($ex_callback[2] == 'save') {
-            if ($user->user['balance'] < 10000) {
+            if ($user->user['diamonds'] < $info_price) {
                 $chat->editMessageText('💢 <b>Недостатньо коштів</b>
-Потрібно: <b>10000</b>💰
-У тебе: <b>'.$user->user['balance'].'</b>💰', null, update::$btn_id);
+Потрібно: <b>'.$info_price.'</b>💎
+У тебе: <b>'.$user->user['diamonds'].'</b>💎', null, update::$btn_id);
             } else {
-                $user->addBal(-10000);
+                if ($info_price != 0) $user->update('diamonds', ($user->user['diamonds']-$info_price));
                 $custominfo = R::dispense('custominfo');
                 $custominfo->text = $user->user['tmp'];
                 $custominfo->photo = null;
                 R::store($custominfo);
                 $user->update('custom_info', $custominfo['id']);
                 $chat->editMessageText('✅ <b>Ваше оформлення !інфо успішно встановлено</b>
-З балансу списано 10к💰', null, update::$btn_id);
+З балансу списано '.$info_price.'💎', null, update::$btn_id);
                 die();
             }
         } else {
-            if ($user->user['balance'] < 10000) {
-                $chat->answerCallbackQuery('💢 Недостатньо коштів. Потрібно: 10к💰, у тебе: '.$user->user['balance'].'💰', true);
+            if ($user->user['diamonds'] < $info_price) {
+                $chat->answerCallbackQuery('💢 Недостатньо коштів. Потрібно: '.$info_price.'💎, у тебе: '.$user->user['diamonds'].'💎', true);
             } else {
                 $user->update('display', 'shop_customInfo');
                 $chat->editMessageText('📝 <b>Напишіть своє оформлення !інфо</b>
@@ -119,18 +121,25 @@ if ($ex_callback[0]) {
             }
         }
     } elseif ($ex_callback[1] == 'photo') {
-        if ($user->user['balance'] < 7000) {
-            $chat->answerCallbackQuery('💢 Недостатньо коштів. Потрібно: 7к💰, у тебе: '.$user->user['balance'].'💰', true);
+        if ($user->user['diamonds'] < $photo_price) {
+            $chat->answerCallbackQuery('💢 Недостатньо коштів. Потрібно: '.$photo_price.'💎, у тебе: '.$user->user['diamonds'].'💎', true);
         } else {
             $user->update('display', 'shop_photo');
             $chat->editMessageText('🖼 <b>Надішліть фотографію для свого !інфо</b>', null, update::$btn_id);
         }
+    } elseif ($ex_callback[1] == 'diamondsinfo') {
+        $chat->answerCallbackQuery('ℹ Є 3 способи отримання діамантів.
+1: Отримувати за 7 комбо в !бонус.
+2: Обміняти 💰 на 💎 за допомогою команди !конвертувати.
+3: Обміняти 💰 на 💎 на біржі, команда: !біржа', true); die();
     }
 } elseif (!$ex_display[1] && !$ex_callback[1]) {
-    $keyboard[0][0]['text'] = '📝 Своє інфо (10к💰)';
+    $keyboard[0][0]['text'] = '📝 Своє інфо ('.$info_price.'💎)';
     $keyboard[0][0]['callback_data'] = 'shop_customInfo';
-    $keyboard[1][0]['text'] = '🖼 Фото в інфо (7к💰)';
+    $keyboard[1][0]['text'] = '🖼 Фото в інфо ('.$photo_price.'💎)';
     $keyboard[1][0]['callback_data'] = 'shop_photo';
+    $keyboard[2][0]['text'] = 'ℹ [Довідка] Як отримати 💎';
+    $keyboard[2][0]['callback_data'] = 'shop_diamondsinfo';
     $photo = 'AgACAgIAAx0CR0W6wgABIFoyYyfr7TkwNXcbCMNpbuUjdKCsPlcAAve_MRtEmkFJtpYDS7xdZOUBAAMCAAN5AAMpBA';
     $chat->sendPhoto($photo, '<b>🚽 Магазин</b>', update::$message_id, ['inline_keyboard' => $keyboard]);
 }
