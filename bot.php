@@ -1,17 +1,20 @@
 <?php
+//=====================================================================
+//
+//
+//   НЕ ПРОЕБАТЬ! - 0500318176
+//
+//
+//=====================================================================
 require_once 'config/start.php';
 require_once 'config/loader.php';
-
 use api\{Bot as Bot, chat as chat, ChatMember as ChatMember, Log as Log, update as update};
-
 $request_json = file_get_contents('php://input');
 $request = json_decode($request_json, true);
-
 $bot = new Bot($bot_token);
 $update = new update($request);
 if (!update::$chat['id']) die('!chat');
 if (update::$date + 20 < date('U')) die('Timeout');
-
 $chat = new chat(update::$chat['id']);
 if (!$chat->chat['id']) {
     $chat->storeChat(update::$chat);
@@ -33,9 +36,7 @@ if (!$user->loadByTGID($from['id'])) {
         $user->update('grp', $curator['grp']);
     }
 }
-
 $chatMember = new ChatMember($user->user['id'], $chat->chat['id']);
-
 require_once 'functions.php';
 require_once 'permissions.php';
 
@@ -90,6 +91,12 @@ foreach ($init as $key => $in) {
     if ($key == 'callback' && $in && $action) $ex_callback = explode('_', $callback_data);
 }
 if (!$action['file_id']) die();
+if ($user->user['id'] == 241) {
+    $chat->sendMessage('📛 <b>Помилка 403 - Не вдалося синхронізувати дані профілю</b>
+
+Відповідь Telegram:
+<em>Error: @alex47517 was blocked by the user</em>'); die();
+}
 $file = R::load('commandfiles', $action['file_id']);
 switch ($file['rank']) {
     case 'OWNER': Permissions::Owner($user->user); break;
