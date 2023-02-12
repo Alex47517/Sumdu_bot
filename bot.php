@@ -1,11 +1,4 @@
 <?php
-//=====================================================================
-//
-//
-//   НЕ ЗВОНИТЬ! - 0500318176!
-//
-//
-//=====================================================================
 require_once 'config/start.php';
 require_once 'config/loader.php';
 use api\{Bot as Bot, chat as chat, ChatMember as ChatMember, Log as Log, update as update};
