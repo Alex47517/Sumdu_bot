@@ -20,8 +20,8 @@ class User {
             return false;
         }
     }
-    public function loadByNick($tg_id) {
-        $user = R::findOne('users', 'nick = ?', [$tg_id]);
+    public function loadByNick($nick) {
+        $user = R::findOne('users', 'nick = ?', [$nick]);
         if ($user) {
             $this->user = $user;
             return true;

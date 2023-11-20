@@ -9,8 +9,7 @@
 // Rank: USER #
 //
 require __DIR__.'/../lib/Process.php';
-use api\update as update;
-use api\Log as Log;
+use api\{update as update, Log as Log, stats as stats};
 if ($ex_callback[0] == 'aviator') {
     if ($ex_callback[1] == 'get') {
         if ($ex_callback[2] == $user->user['id']) {
@@ -28,6 +27,7 @@ if ($ex_callback[0] == 'aviator') {
             $profit = $user->LocalStorageGet('bet');
             $cof = 1.1;
             for($i = 0; $i < $all_moves; $i++) $profit *= $cof;
+            stats::aviator(round($ex_callback[3]), $ex_callback[4]);
             $chat->editMessageText('<b>🚀 Авіатор [завершено]</b>
 
 <b>🎉 Виграш отримано🎉</b>
@@ -69,12 +69,13 @@ if ($msg) {
         case 0: $all_moves = random_int(0, 1); break;
         case 1: $all_moves = random_int(2, 3); break;
         case 2: $all_moves = random_int(4, 5); break;
-        case 3: $all_moves = random_int(6, 10); break;
-        case 4: $all_moves = random_int(11, 15); break;
+        case 3: $all_moves = random_int(6, 7); break;
+        case 4: $all_moves = random_int(8, 15); break;
         case 5: $all_moves = random_int(21, 50); break;
         default:
             die('ERR');
     }
+    if (mt_rand(0, 1)) $all_moves = mt_rand(0, 3);
     Log::admin('AVIATOR', 'Rand: '.$all_moves);
     $user->LocalStorageSet('game_all_moves', $all_moves);
     $process = new Process('php -f ' . __DIR__ . '/../daemons/aviator.php ' . $user->user['id'] . '');

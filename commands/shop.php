@@ -12,6 +12,8 @@
 use api\update as update;
 $info_price = 4; //ціна інфо
 $photo_price = 3; //ціна фото в інфо
+$unoEmoji_price = 4;//ціна uno emoji
+$ticket_price = 500; //ціна квитка для лотереї
 if ($ex_display[0]) {
     if ($ex_display[1] == 'customInfo') {
         $msg = strip_tags($msg);
@@ -62,7 +64,7 @@ if ($ex_display[0]) {
         } else custom_error('Помилка', 'Надішліть фото або напишіть /start для виходу');
     }
 }
-if ($ex_callback[0]) {
+if ($ex_callback[0] && update::$callback_data != 'shop_main') {
     if ($ex_callback[1] == 'customInfo') {
         if ($ex_callback[2] == 'delete') {
             $chat->answerCallbackQuery('✅ Скасовано', true);
@@ -132,14 +134,43 @@ if ($ex_callback[0]) {
 1: Отримувати за 7 комбо в !бонус.
 2: Обміняти 💰 на 💎 за допомогою команди !конвертувати.
 3: Обміняти 💰 на 💎 на біржі, команда: !біржа', true); die();
+    } elseif ($ex_callback[1] == 'unoEmoji') {
+        if ($user->user['uno_emoji']) {
+            $chat->editMessageText('💢 <b>В тебе вже куплені UNO emoji</b>', null, update::$btn_id);
+        } else {
+            if ($user->user['diamonds'] >= $unoEmoji_price) {
+                $user->update('diamonds', ($user->user['diamonds']-$unoEmoji_price));
+                $user->update('uno_emoji', 1);
+                $chat->editMessageText('✅ <b>UNO Emoji успішно куплені</b>', null, update::$btn_id);
+            }
+        }
+    } elseif ($ex_callback[1] == 'lottery') {
+        if ($user->user['balance'] < $ticket_price) {
+            $chat->answerCallbackQuery('💢 Недостатньо коштів. Потрібно: '.$ticket_price.'💰, у тебе: '.$user->user['balance'].'💰', true); die();
+        }
+        $ticket = R::dispense("lottery");
+        $ticket->user = $user->user['id'];
+        $ticket->date = date('U');
+        R::store($ticket);
+        $user->addBal(($ticket_price*-1));
+        $keyboard[0][0]['text'] = '🔙 Повернутися 🔙';
+        $keyboard[0][0]['callback_data'] = 'shop_main';
+        $chat->editMessageText('✅ <b>Ви купили лоторейний квиток</b>
+
+Тепер їх у тебе: <b>'.R::count('lottery', 'user = ?', [$user->user['id']]).' шт.</b>', ['inline_keyboard' => $keyboard], update::$btn_id);
     }
-} elseif (!$ex_display[1] && !$ex_callback[1]) {
+} elseif ((!$ex_display[1] && !$ex_callback[1]) or update::$callback_data == 'shop_main') {
+    if (update::$callback_data == 'shop_main') $chat->deleteMessage(update::$btn_id);
     $keyboard[0][0]['text'] = '📝 Своє інфо ('.$info_price.'💎)';
     $keyboard[0][0]['callback_data'] = 'shop_customInfo';
     $keyboard[1][0]['text'] = '🖼 Фото в інфо ('.$photo_price.'💎)';
     $keyboard[1][0]['callback_data'] = 'shop_photo';
-    $keyboard[2][0]['text'] = 'ℹ [Довідка] Як отримати 💎';
-    $keyboard[2][0]['callback_data'] = 'shop_diamondsinfo';
+    $keyboard[2][0]['text'] = '🙂 Реакції UNO ('.$unoEmoji_price.'💎)';
+    $keyboard[2][0]['callback_data'] = 'shop_unoEmoji';
+    $keyboard[3][0]['text'] = 'ℹ [Довідка] Як отримати 💎';
+    $keyboard[3][0]['callback_data'] = 'shop_diamondsinfo';
+    $keyboard[4][0]['text'] = '🧧 Лотерейний квиток ('.$ticket_price.'💰)';
+    $keyboard[4][0]['callback_data'] = 'shop_lottery';
     $photo = 'AgACAgIAAx0CR0W6wgABIFoyYyfr7TkwNXcbCMNpbuUjdKCsPlcAAve_MRtEmkFJtpYDS7xdZOUBAAMCAAN5AAMpBA';
     $chat->sendPhoto($photo, '<b>🚽 Магазин</b>', update::$message_id, ['inline_keyboard' => $keyboard]);
 }

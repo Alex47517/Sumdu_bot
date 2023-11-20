@@ -39,8 +39,9 @@ if ($msg == '0' && !$user->user['display']) die();
 $cmd = explode(' ', $msg);
 $callback_data = update::$callback_data;
 $display = $user->user['display'];
-
-Log::admin('MSG', ''.$chat->chat['id'].' | '.$chat->chat['title'].' | <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a>: '.$msg);
+if ($msg) $log = $msg;
+else $log = 'callback:'.$callback_data.' ('.$display.')';
+Log::admin('MSG', ''.$chat->chat['id'].' | '.$chat->chat['title'].' | <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a>: '.$log);
 
 //DEBUG:
 if ($chat->chat_id == $admin_user_id) {
@@ -66,7 +67,7 @@ if ($chatMember->chatMember['blacklist']) {
         $chatMember->update('blacklist');
     }
 }
-
+$chatMember->update('message_counter', ($chatMember->chatMember['message_counter']+1));
 //файли із core_commands будуть підключені усі без виключення
 //це системні команди, котрі повинні постійно виконуватися
 $dir = __DIR__.'/core_commands/';
@@ -84,12 +85,12 @@ foreach ($init as $key => $in) {
     if ($key == 'callback' && $in && $action) $ex_callback = explode('_', $callback_data);
 }
 if (!$action['file_id']) die();
-if ($user->user['id'] == 241) {
-    $chat->sendMessage('📛 <b>Помилка 403 - Не вдалося синхронізувати дані профілю</b>
-
-Відповідь Telegram:
-<em>Error: @alex47517 was blocked by the user</em>'); die();
-}
+//if ($user->user['id'] == 241) {
+//    $chat->sendMessage('📛 <b>Помилка 403 - Не вдалося синхронізувати дані профілю</b>
+//
+//Відповідь Telegram:
+//<em>Error: @alex47517 was blocked by the user</em>'); die();
+//}
 $file = R::load('commandfiles', $action['file_id']);
 switch ($file['rank']) {
     case 'OWNER': Permissions::Owner($user->user); break;

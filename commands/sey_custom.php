@@ -7,7 +7,8 @@
 // Args: 2 #
 // Rank: ADMIN #
 //
-use api\chat as chat;
+use api\{chat as chat, AutoClean as AutoClean};
+AutoClean::save();
 $c = R::load("chats", $cmd[1]);
 if ($c) {
 $text = str_replace($cmd[0]." ".$cmd[1]." ", "", $msg);

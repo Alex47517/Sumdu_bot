@@ -9,7 +9,9 @@ if ($chat->chat['tg_id'] == $user->user['tg_id']) {
 //        }
         $keyboard[$i][0] = '🔐 Авторизація на порталі';
         $i++;
-        $chat->sendMessage($text, null, ['keyboard' => $keyboard]);
+        $keyboard[$i][0] = '⚔ Combats';
+        $i++;
+        $chat->sendMessage($text, null, ['keyboard' => $keyboard, 'resize_keyboard' => true]);
     } elseif ($msg == '🔐 Авторизація на порталі') {
         $code = gen_password();
         $auth = R::dispense('auth');
@@ -22,9 +24,11 @@ if ($chat->chat['tg_id'] == $user->user['tg_id']) {
 
 ⚠ <em>Воно одноразове та діє 5 хвилин</em>
 
-<code>https://sumdu.fun/auth/'.$code.'</code>';
+'.$auth['id'].'
+
+<code>https://'.DOMAIN.'/auth/'.$code.'</code>';
         $keyboard[0][0]['text'] = '🔗 Увійти';
-        $keyboard[0][0]['url'] = 'https://sumdu.fun/auth/'.$code;
+        $keyboard[0][0]['url'] = 'https://'.DOMAIN.'/auth/'.$code;
         $chat->sendMessage($text, null, ['inline_keyboard' => $keyboard, 'resize_keyboard' => true]);
     }
 }

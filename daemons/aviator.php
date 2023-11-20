@@ -3,7 +3,7 @@ sleep(1);
 set_time_limit(0); //Знімаємо обмеження по часу на виконання скрипту
 require __DIR__.'/../config/start.php';
 require __DIR__.'/../config/loader.php';
-use api\{chat as chat, Bot as Bot};
+use api\{chat as chat, Bot as Bot, stats as stats};
 pcntl_fork();
 $bot = new Bot($bot_token);
 $sec = 2; //Затримка
@@ -60,6 +60,7 @@ while (json_decode(R::load('users', $user->user['id'])['tmp'], true)['game'] == 
     if ($user->LocalStorageGet('game_pid') != getmypid()) die();
     if ($moves >= $all_moves) {
         //Завершення гри == програш
+        stats::aviator(($game['bet']*-1), $moves);
         $chat->editMessageText('<b>🚀 Авіатор [улетів]</b>
 
 <b>= Літак улетів [програш] =</b>

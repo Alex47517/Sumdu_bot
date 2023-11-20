@@ -1,5 +1,5 @@
 <?php
-$initiators = ['!справка', '!довідка', '/help'];
+$initiators = ['!справка', '!довідка'];
 if (in_array($cmd[0], $initiators)) {
     if ($cmd[1]) {
         $action = R::findOne('actions', 'initiator = ?', [$cmd[1]]);

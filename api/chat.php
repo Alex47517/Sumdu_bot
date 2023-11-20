@@ -1,7 +1,7 @@
 <?php
 namespace api;
 use R;
-use api\update as update;
+use api\{update as update, AutoClean as AutoClean};
 
 class chat {
     public $chat;
@@ -45,7 +45,9 @@ class chat {
             'protect_content' => $protect_content,
             'parse_mode' => 'html',
         ];
-        return Bot::request('sendMessage', $params, $associative);
+        $result = Bot::request('sendMessage', $params, $associative);
+        AutoClean::addToRemove($this->chat, $result->result->message_id);
+        return $result;
     }
     public function update($param, $value = null) {
         $this->chat[$param] = $value;
@@ -131,6 +133,13 @@ class chat {
             'chat_id' => $this->chat_id,
         ];
         return Bot::request('deleteMessage', $params);
+    }
+    public function sendDice($emoji) {
+        $params = [
+            'emoji' => $emoji,
+            'chat_id' => $this->chat_id,
+        ];
+        return Bot::request('sendDice', $params);
     }
     public function answerCallbackQuery($text, $show_alert = false, $url = null) {
         $params = [

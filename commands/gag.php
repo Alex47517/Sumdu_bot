@@ -8,21 +8,23 @@
 // Args: 0 #
 // Rank: USER #
 //
-use api\{update as update, ChatMember as ChatMember};
+use api\{update as update, ChatMember as ChatMember, AutoClean as AutoClean};
 if ($ex_callback[0] == 'ungag') {
     $s_user = R::load('users', $ex_callback[1]);
     if ($s_user) {
-        if ($s_user['balance'] < 2000) {
-            $chat->answerCallbackQuery('💢 Недостатньо коштів! Необхідно: <b>2000💰</b>, у тебе: <b>'.$user->user['diamonds'].'💰</b>', true);
+        if ($user->user['balance'] < 2000) {
+            $chat->answerCallbackQuery('💢 Недостатньо коштів! Необхідно: 2000💰, у тебе: '.$user->user['balance'].'💰</b>', true);
             die();
         }
         $s_user_cl = new User();
         $s_user_cl->loadByID($s_user['id']);
-        $s_user_cl->addBal(-2000);
+        $user->addBal(-2000);
         unmute($s_user['id'], '[GAG-MODULE]', false);
-        $chat->sendMessage('🎉 <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a> дістав кляп із рота <a href="'.$s_user['tg_id'].'">'.$s_user['nick'].'</a>
+        AutoClean::save();
+        $chat->deleteMessage(update::$btn_id);
+        $chat->sendMessage('🎉 <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a> дістав кляп із рота <a href="tg://user?id='.$s_user['tg_id'].'">'.$s_user['nick'].'</a>
 
-З балансу <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a> списано <b>2000💰</b>', update::$message_id, ['inline_keyboard' => $keyboard]);
+З балансу <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a> списано <b>2000💰</b>', update::$message_id, null);
     }
     die();
 }
@@ -42,7 +44,8 @@ if ($s_user['id']) {
     $user->update('diamonds', ($user->user['diamonds']-1));
     $keyboard[0][0]['text'] = '🎁 Розкляпити (2000💰)';
     $keyboard[0][0]['callback_data'] = 'ungag_'.$s_user['id'];
-    $chat->sendMessage('🤐 <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a> засунув кляп у рота <a href="'.$s_user['tg_id'].'">'.$s_user['nick'].'</a>
+    AutoClean::save();
+    $chat->sendMessage('🤐 <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a> засунув кляп у рота <a href="tg://user?id='.$s_user['tg_id'].'">'.$s_user['nick'].'</a>
 
 З балансу <a href="tg://user?id='.$user->user['tg_id'].'">'.$user->user['nick'].'</a> списано <b>1💎</b>', update::$message_id, ['inline_keyboard' => $keyboard]);
 } else custom_error('Помилка 404', 'Користувач не знайдений');

@@ -1,5 +1,5 @@
 <?php
-use api\update as update;
+use api\{update as update, chat as chat};
 
 $initiators = ['!створити команду', '!создать команду', '/create_command'];
 if (in_array($msg, $initiators)) {
@@ -169,7 +169,7 @@ if ($ex_callback[0] == 'blockcustomcommand' or $ex_callback[0] == 'allowcustomco
     if ($command_db && $client && $client_chat) {
         $command = json_decode($command_db['info'], true);
         if ($ex_callback[0] == 'allowcustomcommand') {
-            $client_chat = new \api\chat($client_chat['tg_id']);
+            $client_chat = new chat($client_chat['tg_id']);
             new_command($command);
             $client_chat->sendMessage('✅ <b><a href="tg://user?id='.$client->user['id'].'">'.$client->user['nick'].'</a>, Ваша команда #'.$command_db['id'].' успішно створена!</b>
 

@@ -79,6 +79,10 @@ function sendOffers($type, $page) {
     die();
 }
 //=========
+if ($msg == '🔙 Закрити біржу 🔙') {
+    $user->update('display');
+    $chat->sendMessage('✅ <b>Біржа закрита</b>', update::$message_id, ['remove_keyboard' => true, 'selective' => true]); die();
+}
 if ($ex_callback[0] == 'exchange') {
     if ($user->user['id'] != $ex_callback[1]) { $chat->answerCallbackQuery('💢 Це не твоє меню біржи. Відкрий своє за допомогою команди !біржа', true); die(); }
     if ($ex_callback[2] == 'remove-offer') {
@@ -158,10 +162,7 @@ if ($ex_callback[0] == 'exchange') {
     }
 } elseif ($ex_display[0] == 'exchange') {
     if ($msg && $ex_display[1] == '0') {
-        if ($msg == '🔙 Закрити біржу 🔙') {
-            $user->update('display');
-            $chat->sendMessage('✅ <b>Біржа закрита</b>', update::$message_id, ['remove_keyboard' => true, 'selective' => true]); die();
-        } elseif ($msg == '🪛 Мої оголошення 🪛') {
+        if ($msg == '🪛 Мої оголошення 🪛') {
             $offers = R::getAll('SELECT * FROM offers WHERE `user_id` = ? ORDER BY `date` DESC', [$user->user['id']]);
             if (!$offers) custom_error('У тебе нема активних оголошень', 'Пиши /start або натисни на кнопку для виходу');
             $i = 0;
@@ -169,6 +170,7 @@ if ($ex_callback[0] == 'exchange') {
                 if ($offer['type'] == 'sell') $type = 'Продаж'; else $type = 'Купівля';
                 $keyboard[$i][0]['text'] = $type.' 1💎 за '.$offer['price'].'💰';
                 $keyboard[$i][0]['callback_data'] = 'exchange_'.$user->user['id'].'_remove-offer_'.$offer['id'];
+                $i++;
             }
             $chat->sendMessage('💱 <b>Біржа</b>
 Ось список твоїх оголошень:', update::$message_id, ['inline_keyboard' => $keyboard]);
@@ -188,9 +190,9 @@ if ($ex_callback[0] == 'exchange') {
             sendOffers('buy', 1);
         } else close();
     } elseif ($ex_display[1] == 'create-order') {
-        if ($price < 1) custom_error('Помилка', 'Мінімальна ціна: 1💰');
         $type = $ex_display[2];
         $price = round($msg);
+        if ($price < 1) custom_error('Помилка', 'Мінімальна ціна: 1💰');
         $offers = R::getAll('SELECT * FROM offers WHERE `user_id` = ? ORDER BY `date` DESC', [$user->user['id']]);
         if (count($offers) >= 2) { $user->update('display', 'exchange_0'); custom_error('Помилка', 'Одночасно можна створити тільки 2 оголошення'); }
         $offer = R::dispense('offers');
@@ -259,6 +261,7 @@ if ($ex_callback[0] == 'exchange') {
 '.$order_sum.'💰');
         $chat->sendMessage('✅ <b>Біржа - угода завершена!</b>
 Ви '.$end.' <b>'.$sum.'💎</b> за <b>'.$order_sum.'💰</b> у <a href="tg://user?id='.$owner['tg_id'].'">'.$owner['nick'].'</a>');
+        $user->update('display', 'exchange_0');
         die();
     } else {
         close();

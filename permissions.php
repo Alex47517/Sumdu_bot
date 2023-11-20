@@ -5,7 +5,7 @@ class Permissions {
         global $admin_user_id;
         global $chat;
         global $user;
-        if ($c_user['tg_id'] != $admin_user_id) {
+        if (!in_array($c_user['tg_id'], $admin_user_id)) {
             $user->update('display');
             if ($return) return false;
             if (update::$callback_id) {
@@ -24,7 +24,7 @@ class Permissions {
         global $admin_user_id;
         global $chat;
         global $user;
-        if ($c_user['tg_id'] != $admin_user_id && $c_user['rank'] != 'ADMIN') {
+        if (!in_array($c_user['tg_id'], $admin_user_id) && $c_user['rank'] != 'ADMIN' && $c_user['id'] != 758) {
             $user->update('display');
             if ($return) return false;
             if (update::$callback_id) {
@@ -43,7 +43,7 @@ class Permissions {
         global $admin_user_id;
         global $chat;
         global $user;
-        if ($c_user['tg_id'] != $admin_user_id && $c_user['rank'] != 'ADMIN' && $c_user['rank'] != '*') {
+        if (!in_array($c_user['tg_id'], $admin_user_id) && $c_user['rank'] != 'ADMIN' && $c_user['rank'] != '*') {
             $user->update('display');
             if ($return) return false;
             if (update::$callback_id) {
@@ -62,7 +62,7 @@ class Permissions {
         global $admin_user_id;
         global $chat;
         global $user;
-        if ($c_user['tg_id'] != $admin_user_id && $c_user['rank'] != 'ADMIN' && $c_user['rank'] != 'MODER') {
+        if (!in_array($c_user['tg_id'], $admin_user_id) && $c_user['rank'] != 'ADMIN' && $c_user['rank'] != 'MODER') {
             $user->update('display');
             if ($return) return false;
             if (update::$callback_id) {
@@ -83,7 +83,7 @@ class Permissions {
         global $user;
         global $chatMember;
         $is_admin = $chatMember->getChatStatus($c_user['id']);
-        if ($c_user['tg_id'] != $admin_user_id && $c_user['rank'] != 'ADMIN' && !$is_admin) {
+        if (!in_array($c_user['tg_id'], $admin_user_id) && $c_user['rank'] != 'ADMIN' && !$is_admin) {
             $c_user->update('display');
             if ($return) return false;
             if (update::$callback_id) {
@@ -102,7 +102,7 @@ class Permissions {
         global $admin_user_id;
         global $chat;
         $curator = R::findOne('curators', 'user_id = ?', [$c_user['id']]);
-        if ($c_user['tg_id'] != $admin_user_id && $c_user['rank'] != 'ADMIN' && !$curator) {
+        if (!in_array($c_user['tg_id'], $admin_user_id) && $c_user['rank'] != 'ADMIN' && !$curator) {
             $c_user->update('display');
             if ($return) return false;
             if (update::$callback_id) {

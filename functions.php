@@ -17,7 +17,7 @@ class Time {
             $day * 60 * 60 * 24 + $hour * 60 * 60 + $minut * 60 + $sec;
     }
     //ищет в тексте "2d4m5s" (пример) указатель времени, "4m" (пример)
-    private function getDatePart($str, $part){
+    private static function getDatePart($str, $part){
         $substr = substr($str, 0, strpos($str, $part));
         if(!$substr) return 0;
         $substr = strrev($substr);
@@ -32,7 +32,7 @@ class Time {
         return (int)strrev($res);
     }
     //формирует массив из количества дней, часов, минут, секунд. Получая на вход количество секунд
-    private function seconds2times($seconds) {
+    private static function seconds2times($seconds) {
         $times = array();
         // считать нули в значениях
         $count_zero = false;
@@ -72,7 +72,7 @@ class Time {
         return $time;
     }
     //возвращает правильный вариант слова "день" для входного числа
-    private function days($days) {
+    private static function days($days) {
         $a=substr($days,strlen($days)-1,1);
         if($a==1) $str="доба";
         if($a==2 || $a==3 || $a==4) $str="доби";
@@ -81,7 +81,7 @@ class Time {
         return $str;
     }
     //возвращает правильный вариант слова "час" для входного числа
-    private function hours($hour) {
+    private static function hours($hour) {
         $a=substr($hour,strlen($hour)-1,1);
         if($a==1) $str="година";
         if($a==2 || $a==3 || $a==4) $str="години";
@@ -199,7 +199,12 @@ function new_command($command) {
     fclose($new_command_file);
     return true;
 }
-function mute($user_id, $time, $reason, $by, $send_msg = true) {
+function mute($user_id, $time, $reason, $by, $send_msg = true, $custom_chat = null) {
+    if ($custom_chat) {
+        $chat = new chat($custom_chat);
+    } else {
+        global $chat;
+    }
     if (!$reason) $reason = '[Не вказана]';
     if ($time == 0) {
         $until_date = date('U')+1;
@@ -208,7 +213,6 @@ function mute($user_id, $time, $reason, $by, $send_msg = true) {
         $until_date = date('U')+$time;
         $str_time = Time::sec2time_txt($time);
     }
-    global $chat;
     $s_user = R::load('users', $user_id);
     if ($s_user) {
         if ($send_msg) {
@@ -337,4 +341,7 @@ function getEmojiNum($num) {
     } else {
         return $num.'.';
     }
+}
+function remove_emoji($text) {
+    return preg_replace('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{1F700}-\x{1F77F}\x{1F780}-\x{1F7FF}\x{1F800}-\x{1F8FF}\x{1F900}-\x{1F9FF}\x{1FA00}-\x{1FA6F}\x{1FA70}-\x{1FAFF}\x{2300}-\x{23FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}\x{2900}-\x{297F}\x{2B50}-\x{2BFF}\x{3200}-\x{32FF}\x{1F000}-\x{1F02F}]/u', '', $text);
 }

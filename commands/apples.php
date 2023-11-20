@@ -8,7 +8,7 @@
 // Args: 1 #
 // Rank: USER #
 //
-use api\update as update;
+use api\{update as update, stats as stats};
 if ($ex_callback[0] == 'apples') {
     if ($ex_callback[1] == 'get') {
         $game_id = $ex_callback[2];
@@ -28,6 +28,7 @@ if ($ex_callback[0] == 'apples') {
             }
         }
         $profit = round(($game+1) * ($sum * 0.3) + $sum);
+        stats::apples($profit, ($game+1));
         $chat->editMessageText('🍎 <b>Гра в яблучка [завершена]</b>
 
 <b>🎉 Виграш отримано 🎉</b>
@@ -52,12 +53,14 @@ if ($ex_callback[0] == 'apples') {
             die();
         }
         if ($game == $row) {
-            if ($game < 5) {
+            if ($game < 1) {
                 if (mt_rand(0,3) > 0) $win = true; else $win = false;
-            } elseif ($game < 11) {
+            } elseif ($game < 5) {
+                if (mt_rand(0,3) > 0) $win = true; else $win = false;
+            } elseif ($game < 8) {
                 if (mt_rand(0,2) > 0) $win = true; else $win = false;
             } else {
-                if (mt_rand(0,1) > 0) $win = true; else $win = false;
+                if (mt_rand(0,2) > 0) $win = true; else $win = false;
             }
             $bomb = $col;
             while ($bomb == $col) {
@@ -95,6 +98,7 @@ if ($ex_callback[0] == 'apples') {
                 } else {
                     $max_profit = round(($game) * ($sum * 0.3) + $sum);
                 }
+                stats::apples(($sum*-1), ($game+1));
                 $chat->editMessageText('🍎 <b>Гра в яблучка [завершена]</b>
 
 <b>👺 Ти програв 👺</b>

@@ -14,8 +14,10 @@ if (in_array($cmd[1], ['встановити', 'установить', 'set'])) 
         if (!$s_user) {
             $s_user = R::findOne('users', 'nick = ?', [$cmd[2]]);
             if (!$s_user) {
-                $user->update('nick', $cmd[2]);
-                $chat->sendMessage('✅ Ви змінили нік на <b>'.$cmd[2].'</b>');
+                $cmd[2] = str_replace(' ', '', $cmd[2]);
+                if (!$cmd[2] or $cmd[2] == '' or mb_strlen($cmd[2], 'UTF-8') < 3 or preg_match('/^[a-zA-Zа-яА-ЯіІїЇєЄ0-9]+$/', $cmd[2]) !== 1) custom_error('Помилка', 'Такий нік неможливо встановити');
+                $user->update('nick', remove_emoji($cmd[2]));
+                $chat->sendMessage('✅ Ви змінили нік на <b>'.remove_emoji($cmd[2]).'</b>');
                 die();
             }
         }
